@@ -6,7 +6,7 @@
  * - Angular reads IndexedDB on startup → navigates to deep link
  */
 
-const CACHE = 'pwa-push-v1';
+const CACHE = 'pwa-push-v2';
 const DB_NAME = 'pwa-push-db';
 const STORE  = 'pending-nav';
 
@@ -61,7 +61,7 @@ self.addEventListener('fetch', event => {
   // Navigation → always serve index.html (SPA)
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      caches.match('/index.html').then(r => r || fetch('/index.html'))
+      caches.match('/index.html').then(r => r || fetch('/index.html', { redirect: 'follow' }))
     );
     return;
   }
@@ -70,8 +70,8 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (response.ok) {
+      return fetch(event.request, { redirect: 'follow' }).then(response => {
+        if (response.ok && response.type !== 'opaqueredirect') {
           const clone = response.clone();
           caches.open(CACHE).then(c => c.put(event.request, clone));
         }
