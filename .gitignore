@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+push-server/node_modules/
+
+# Build output
+dist/
+
+# SSL certificates (never commit private keys)
+ssl/
+*.pem
+*.key
+
+# Environment files
+.env
+push-server/.env
+
+# Angular cache
+.angular/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Subscriptions (runtime data)
+push-server/subscriptions.json

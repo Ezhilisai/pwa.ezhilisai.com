@@ -1,0 +1,15 @@
+{
+  "name": "pwa-push-server",
+  "version": "1.0.0",
+  "description": "Web Push notification server for Angular PWA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "generate-vapid": "node generate-vapid.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "web-push": "^3.6.7"
+  }
+}

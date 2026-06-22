@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: pwa-push-server
+    runtime: node
+    rootDir: push-server
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: VAPID_PUBLIC_KEY
+        sync: false          # Set manually in Render dashboard
+      - key: VAPID_PRIVATE_KEY
+        sync: false          # Set manually in Render dashboard
+      - key: VAPID_SUBJECT
+        value: mailto:ezhil.ab3@gmail.com
+      - key: PORT
+        value: "3000"
