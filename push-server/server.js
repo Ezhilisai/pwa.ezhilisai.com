@@ -66,9 +66,72 @@ app.use(cors({
 
 app.use(express.json());
 
-// Health check
+// Admin UI — push from browser
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', subscriptions: subscriptions.length });
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Push Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f7; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .card { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .sub-count { color: #666; font-size: 14px; margin-bottom: 24px; }
+    label { font-size: 13px; font-weight: 600; color: #333; display: block; margin-bottom: 6px; }
+    input { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 8px; padding: 10px 12px; font-size: 15px; margin-bottom: 16px; outline: none; }
+    input:focus { border-color: #6c63ff; }
+    .buttons { display: flex; gap: 10px; }
+    button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    button:hover { opacity: 0.85; }
+    .btn-birthday { background: #ff6b6b; color: white; }
+    .btn-anniversary { background: #6c63ff; color: white; }
+    .result { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 14px; display: none; }
+    .result.success { background: #e8f5e9; color: #2e7d32; }
+    .result.error { background: #fdecea; color: #c62828; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔔 Push Admin</h1>
+    <p class="sub-count" id="count">Loading subscribers...</p>
+    <label>Name</label>
+    <input id="name" type="text" placeholder="e.g. John" value="John" />
+    <div class="buttons">
+      <button class="btn-birthday" onclick="send('birthday')">🎂 Birthday</button>
+      <button class="btn-anniversary" onclick="send('anniversary')">💍 Anniversary</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+  <script>
+    fetch('/api/subscriptions').then(r => r.json()).then(d => {
+      document.getElementById('count').textContent = d.count + ' subscriber(s)';
+    });
+
+    async function send(type) {
+      const name = document.getElementById('name').value || 'Someone';
+      const result = document.getElementById('result');
+      result.style.display = 'none';
+      try {
+        const res = await fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type, name })
+        });
+        const data = await res.json();
+        result.className = 'result success';
+        result.textContent = '✅ Sent to ' + data.sent + ' device(s)!';
+      } catch (e) {
+        result.className = 'result error';
+        result.textContent = '❌ Failed: ' + e.message;
+      }
+      result.style.display = 'block';
+    }
+  </script>
+</body>
+</html>`);
 });
 
 // VAPID public key (Angular fetches on init)
