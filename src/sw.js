@@ -6,7 +6,7 @@
  * - Angular reads IndexedDB on startup → navigates to deep link
  */
 
-const CACHE = 'pwa-push-v2';
+const CACHE = 'pwa-push-v3';
 const DB_NAME = 'pwa-push-db';
 const STORE  = 'pending-nav';
 
@@ -35,7 +35,7 @@ self.addEventListener('install', event => {
   console.log('[SW] Installing');
   event.waitUntil(
     caches.open(CACHE)
-      .then(cache => cache.addAll(['/', '/index.html', '/manifest.webmanifest']))
+      .then(cache => cache.addAll(['/index.html', '/manifest.webmanifest']))
       .then(() => self.skipWaiting())
   );
 });
@@ -119,7 +119,7 @@ self.addEventListener('notificationclick', event => {
           return appClient.focus();
         }
         // App closed: open root, Angular reads IndexedDB on startup
-        return self.clients.openWindow('/');
+        return self.clients.openWindow(self.location.origin + '/');
       })
   );
 });
